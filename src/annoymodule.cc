@@ -33,7 +33,7 @@ typedef signed __int32    int32_t;
 #endif
 
 #ifdef IS_PY3K
-    #define PyInt_FromLong PyLong_FromLong 
+    #define PyInt_FromLong PyLong_FromLong
 #endif
 
 
@@ -127,6 +127,8 @@ py_an_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
    self->ptr = new AnnoyIndex<int32_t, float, Angular, Kiss64Random>(self->f);
   } else if (!strcmp(metric, "euclidean")) {
     self->ptr = new AnnoyIndex<int32_t, float, Euclidean, Kiss64Random>(self->f);
+  } else if (!strcmp(metric, "haversine")) {
+    self->ptr = new AnnoyIndex<int32_t, float, Haversine, Kiss64Random>(self->f);
   } else if (!strcmp(metric, "manhattan")) {
     self->ptr = new AnnoyIndex<int32_t, float, Manhattan, Kiss64Random>(self->f);
   } else if (!strcmp(metric, "hamming")) {
@@ -142,7 +144,7 @@ py_an_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
 }
 
 
-static int 
+static int
 py_an_init(py_annoy *self, PyObject *args, PyObject *kwargs) {
   // Seems to be needed for Python 3
   const char *metric = NULL;
@@ -154,7 +156,7 @@ py_an_init(py_annoy *self, PyObject *args, PyObject *kwargs) {
 }
 
 
-static void 
+static void
 py_an_dealloc(py_annoy* self) {
   delete self->ptr;
   Py_TYPE(self)->tp_free((PyObject*)self);
@@ -173,7 +175,7 @@ py_an_load(py_annoy *self, PyObject *args, PyObject *kwargs) {
   char* filename;
   bool res = false;
   bool prefault = false;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   static char const * kwlist[] = {"fn", "prefault", NULL};
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|b", (char**)kwlist, &filename, &prefault))
@@ -194,7 +196,7 @@ py_an_save(py_annoy *self, PyObject *args, PyObject *kwargs) {
   char *filename;
   bool res = false;
   bool prefault = false;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   static char const * kwlist[] = {"fn", "prefault", NULL};
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|b", (char**)kwlist, &filename, &prefault))
@@ -242,10 +244,10 @@ bool check_constraints(py_annoy *self, int32_t item, bool building) {
   }
 }
 
-static PyObject* 
+static PyObject*
 py_an_get_nns_by_item(py_annoy *self, PyObject *args, PyObject *kwargs) {
   int32_t item, n, search_k=-1, include_distances=0;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
 
   static char const * kwlist[] = {"i", "n", "search_k", "include_distances", NULL};
@@ -291,11 +293,11 @@ convert_list_to_vector(PyObject* v, int f, vector<float>* w) {
   return true;
 }
 
-static PyObject* 
+static PyObject*
 py_an_get_nns_by_vector(py_annoy *self, PyObject *args, PyObject *kwargs) {
   PyObject* v;
   int32_t n, search_k=-1, include_distances=0;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
 
   static char const * kwlist[] = {"vector", "n", "search_k", "include_distances", NULL};
@@ -318,10 +320,10 @@ py_an_get_nns_by_vector(py_annoy *self, PyObject *args, PyObject *kwargs) {
 }
 
 
-static PyObject* 
+static PyObject*
 py_an_get_item_vector(py_annoy *self, PyObject *args) {
   int32_t item;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   if (!PyArg_ParseTuple(args, "i", &item))
     return NULL;
@@ -341,11 +343,11 @@ py_an_get_item_vector(py_annoy *self, PyObject *args) {
 }
 
 
-static PyObject* 
+static PyObject*
 py_an_add_item(py_annoy *self, PyObject *args, PyObject* kwargs) {
   PyObject* v;
   int32_t item;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   static char const * kwlist[] = {"i", "vector", NULL};
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "iO", (char**)kwlist, &item, &v))
@@ -386,7 +388,7 @@ py_an_on_disk_build(py_annoy *self, PyObject *args, PyObject *kwargs) {
 static PyObject *
 py_an_build(py_annoy *self, PyObject *args, PyObject *kwargs) {
   int q;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   static char const * kwlist[] = {"n_trees", NULL};
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i", (char**)kwlist, &q))
@@ -402,9 +404,9 @@ py_an_build(py_annoy *self, PyObject *args, PyObject *kwargs) {
 
 static PyObject *
 py_an_unbuild(py_annoy *self) {
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
-  
+
   Py_BEGIN_ALLOW_THREADS;
   self->ptr->unbuild();
   Py_END_ALLOW_THREADS;
@@ -415,7 +417,7 @@ py_an_unbuild(py_annoy *self) {
 
 static PyObject *
 py_an_unload(py_annoy *self) {
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
 
   self->ptr->unload();
@@ -427,7 +429,7 @@ py_an_unload(py_annoy *self) {
 static PyObject *
 py_an_get_distance(py_annoy *self, PyObject *args) {
   int32_t i, j;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   if (!PyArg_ParseTuple(args, "ii", &i, &j))
     return NULL;
@@ -443,7 +445,7 @@ py_an_get_distance(py_annoy *self, PyObject *args) {
 
 static PyObject *
 py_an_get_n_items(py_annoy *self) {
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
 
   int32_t n = self->ptr->get_n_items();
@@ -452,7 +454,7 @@ py_an_get_n_items(py_annoy *self) {
 
 static PyObject *
 py_an_get_n_trees(py_annoy *self) {
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
 
   int32_t n = self->ptr->get_n_trees();
@@ -462,7 +464,7 @@ py_an_get_n_trees(py_annoy *self) {
 static PyObject *
 py_an_verbose(py_annoy *self, PyObject *args) {
   int verbose;
-  if (!self->ptr) 
+  if (!self->ptr)
     return NULL;
   if (!PyArg_ParseTuple(args, "i", &verbose))
     return NULL;

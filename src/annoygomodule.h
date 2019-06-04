@@ -65,7 +65,7 @@ class AnnoyIndex {
   };
 };
 
-class AnnoyIndexAngular : public AnnoyIndex 
+class AnnoyIndexAngular : public AnnoyIndex
 {
  public:
   AnnoyIndexAngular(int f) {
@@ -78,6 +78,14 @@ class AnnoyIndexEuclidean : public AnnoyIndex {
  public:
   AnnoyIndexEuclidean(int f) {
     ptr = new ::AnnoyIndex<int32_t, float, ::Euclidean, ::Kiss64Random>(f);
+    this->f = f;
+  }
+};
+
+class AnnoyIndexHaversine : public AnnoyIndex {
+ public:
+  AnnoyIndexHaversine(int f) {
+    ptr = new ::AnnoyIndex<int32_t, float, ::Haversine, ::Kiss64Random>(f);
     this->f = f;
   }
 };
