@@ -170,12 +170,12 @@ inline T haversine_distance(const T* x, const T* y, int f) {
 
   d = 2 * 6372.8 * asin(
     sqrt(
-      pow( sin((lat2 - lat1)/2) , 2)  +
-      cos(lat1)*cos(lat2) * pow( sin((lon2-lon1)/2) , 2)
+      pow( sin((lat2 - lat1)/2) , 2.0)  +
+      cos(lat1) * cos(lat2) * pow( sin((lon2-lon1)/2) , 2.0)
     )
   );
 
-  return d;
+  return d*d;
 }
 
 
