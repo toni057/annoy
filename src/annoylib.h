@@ -168,7 +168,12 @@ inline T haversine_distance(const T* x, const T* y, int f) {
   T lat2 = *y;
   T lon2 = *(++y);
 
-  d = 2 * 6370 * asin(sqrt(pow((lon2 - lon1)/2, 2)  + cos(lon1)*cos(lon2)*pow(sin((lat2-lat1)/2), 2) ));
+  d = 2 * 6372.8 * asin(
+    sqrt(
+      pow( sin((lat2 - lat1)/2) , 2)  +
+      cos(lat1)*cos(lat2) * pow( sin((lon2-lon1)/2) , 2)
+    )
+  );
 
   return d;
 }
